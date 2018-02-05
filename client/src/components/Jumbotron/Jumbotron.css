@@ -1,0 +1,6 @@
+.jumbotron h1, .jumbotron h2, .jumbotron h3, .jumbotron h4, .jumbotron h5, .jumbotron h6{
+    text-align: center;
+}
+.jumbotron{
+    background-color: transparent;
+}

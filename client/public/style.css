@@ -1,0 +1,15 @@
+#root{
+    background-color:#e9ece5;
+}
+
+/* Media Queries */
+@media only screen and (min-width: 996px) {
+    #root{
+        height:100vh;
+    }
+}
+@media only screen and (max-width: 996px) {
+    #root{
+        height:180vh;
+    }
+}

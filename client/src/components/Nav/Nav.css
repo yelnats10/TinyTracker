@@ -1,0 +1,7 @@
+.navbar-inverse .navbar-brand:hover, .navbar-inverse .navbar-brand:focus{
+    background-color: transparent;
+}
+.navbar-inverse{
+    border-color: transparent;
+    background-color: #3b3a36;
+}
