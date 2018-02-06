@@ -1,24 +1,86 @@
-import React from "react";
-import Jumbotron from "../../components/Jumbotron";
-import API from "../../utils/API";
-import { Col, Row, Container } from "../../components/Grid";
-import { Input, FormBtn } from "../../components/Form";
+import React, {Component} from "react";
+import { Link, withRouter } from 'react-router-dom';
 
-class Books extends React.Component {
+import Jumbotron from "../../components/Jumbotron";
+// import {SignUpLink} from '../SignUp';
+// import PasswordForgetLink from '../PasswordForget';
+
+// import API from "../../utils/API";
+
+//may need signup link and password forget link
+
+import { Col, Row, Container } from "../../components/Grid";
+// import { Input, FormBtn } from "../../components/Form";
+import { auth } from '../../firebase';
+import * as routes from '../../constants/routes';
+
+
+const SignInPage = ({ history }) =>
+    <div>
+        
+        <SignInForm history={history} />
+        <Link to="/passwordforget">Forget Password?</Link>
+        <br></br>
+        <Link to={routes.SIGN_UP}>Sign Up</Link>
+    </div>
+
+const byPropKey = (propertyName, value) => () => ({
+    [propertyName]: value,
+});
+
+const INITIAL_STATE = {
+    email: '',
+    password: '',
+    error: null,
+};
+
+
+
+class SignInForm extends Component {
   constructor(props) {
-    super(props);
-    this.state = {
-      books: [],
-      title: "",
-      author: "",
-      synopsis: ""
-    };
+      super(props);
+      
+      this.state = { ...INITIAL_STATE };
   }
 
-  handleRoute = event => {
-    event.preventDefault();
-    window.location.href="/books"
-}
+  onSubmit = (event) => {
+      const {
+          email,
+          password,
+      } = this.state;
+
+      const {
+          history,
+      } = this.props;
+
+      auth.doSignInWithEmailAndPassword(email, password)
+          .then(() => {
+              this.setState(() => ({ ...INITIAL_STATE}));
+              history.push(routes.BOOKS);
+          })
+          .catch(error => {
+              this.setState(byPropKey('error', error));
+          });
+
+      event.preventDefault();
+  }
+
+
+// class Books extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       books: [],
+//       title: "",
+//       author: "",
+//       synopsis: ""
+//     };
+//   }
+
+//   handleRoute = event => {
+//     event.preventDefault();
+//     window.location.href="/books"
+// }
   // When the component mounts, load all books and save them to this.state.books
 //   componentDidMount() {
 //     this.loadBooks();
@@ -41,97 +103,65 @@ class Books extends React.Component {
 //   };
 
   // Handles updating component state when the user types into the input field
-  handleInputChange = event => {
-    const { name, value } = event.target;
-    this.setState({
-      [name]: value
-    });
-  };
+  // handleInputChange = event => {
+  //   const { name, value } = event.target;
+  //   this.setState({
+  //     [name]: value
+  //   });
+  // };
 
   // When the form is submitted, use the API.saveBook method to save the book data
   // Then reload books from the database
-  handleFormSubmit = event => {
-    event.preventDefault();
-    if (this.state.title && this.state.author) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
-      })
-        .then(res => this.loadBooks())
-        .catch(err => console.log(err));
-    }
-  };
+  // handleFormSubmit = event => {
+  //   event.preventDefault();
+  //   if (this.state.title && this.state.author) {
+  //     API.saveBook({
+  //       title: this.state.title,
+  //       author: this.state.author,
+  //       synopsis: this.state.synopsis
+  //     })
+  //       .then(res => this.loadBooks())
+  //       .catch(err => console.log(err));
+  //   }
+  // };
 
   render() {
+    const {
+      email,
+      password,
+      error,
+  } = this.state;
+
+  const isInvalid =
+      password === '' ||
+      email === '';
+
     return (
-      <Container fluid>
-        <Row>
-          <Col size="md-6">
-            <Jumbotron>
-              <h1>Signup!</h1>
-            </Jumbotron>
-            <form>
-              <Input
-                value={this.state.title}
-                onChange={this.handleInputChange}
-                name="title"
-                placeholder="New Email (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Pick Your Username (required)"
-              />
-              <Input
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Select Your Unique Password (required)"
-              />
-              <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Sign Up!
-              </FormBtn>
-              <FormBtn
-                onClick={this.handleRoute}
-              >
-                Go To Dashboard!
-              </FormBtn>
+      <form onSubmit={this.onSubmit}>
+                <input
+                value={email}
+                onChange={event =>this.setState(byPropKey('email', event.target.value))}
+                type="text"
+                placeholder="Email Address"
+                />
+                <input
+                value={password}
+                onChange={event =>this.setState(byPropKey('password', event.target.value))}
+                type="password"
+                placeholder="Password"
+                />
+                <button disabled={isInvalid} type="submit">
+                Sign In
+                </button>
+
+                { error && <p>{error.message}</p>}
             </form>
-          </Col>
-          <Col size="md-6">
-            <Jumbotron>
-              <h1>Signin!</h1>
-            </Jumbotron>
-            <form>
-              <Input
-                value={this.state.title}
-                onChange={this.handleInputChange}
-                name="title"
-                placeholder="Username (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Password (required)"
-              />
-              <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Sign In!!
-              </FormBtn>
-            </form>
-          </Col>
-        </Row>
-      </Container>
     );
   }
 }
 
-export default Books;
+export default withRouter(SignInPage);
+
+export {
+  SignInForm,
+};

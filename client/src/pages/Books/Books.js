@@ -8,6 +8,8 @@ import { List, ListItem } from "../../components/List";
 import { Input, TextArea, FormBtn } from "../../components/Form";
 // Import other components hereeeeee
 
+import withAuthorization from '../../components/Authorization';
+
 class Books extends React.Component {
   constructor(props) {
     super(props);
@@ -178,4 +180,6 @@ class Books extends React.Component {
   }
 }
 
-export default Books;
+const authCondition = (authUser) => !!authUser;
+
+export default withAuthorization(authCondition)(Books);
