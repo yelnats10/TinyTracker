@@ -6,12 +6,15 @@ import API from "../../utils/API";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
 import { Input, TextArea, FormBtn } from "../../components/Form";
+import { auth } from '../../firebase';
+import SignInForm from '../Signin';
 // Import other components hereeeeee
 
 import withAuthorization from '../../components/Authorization';
+import { firebase } from '../../firebase';
 
 class Books extends React.Component {
-  constructor(props) {
+  constructor(props, { authUser }) {
     super(props);
     this.state = {
       books: [],
@@ -19,13 +22,18 @@ class Books extends React.Component {
       author: "",
       synopsis: "",
       sLocation: "",
-      unique: []
+      unique: [],
+      email: ""
     };
   }
+
 
   // When the component mounts, load all books and save them to this.state.books
   componentDidMount() {
     this.loadBooks();
+    firebase.auth.onAuthStateChanged(authUser => {
+        this.setState({"email": authUser.email});
+    })
   }
 
   // Loads all books  and sets them to this.state.books
@@ -75,14 +83,16 @@ class Books extends React.Component {
   // When the form is submitted, use the API.saveBook method to save the book data
   // Then reload books from the database
   handleFormSubmit = event => {
+    event.preventDefault();
     // this.setState({unique: []});
     // console.log(this.state.unique);
-    event.preventDefault();
+console.log("++++++++++++++++++" + this.state.email);
     if (this.state.title && this.state.author) {
       API.saveBook({
         title: this.state.title,
         author: this.state.author,
-        synopsis: this.state.synopsis
+        synopsis: this.state.synopsis,
+        email: this.state.email
       })
         .then(res => this.loadBooks())
         .catch(err => console.log(err));
@@ -181,5 +191,6 @@ class Books extends React.Component {
 }
 
 const authCondition = (authUser) => !!authUser;
+
 
 export default withAuthorization(authCondition)(Books);
