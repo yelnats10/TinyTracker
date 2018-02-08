@@ -39,10 +39,12 @@ class Books extends React.Component {
   // Loads all books  and sets them to this.state.books
   loadBooks = () => {
     if (this.state.sLocation === "" || this.state.sLocation === "All Locations" || this.state.sLocation === "Select Location"){
-    API.getBooks(this.state.email)
-      .then(res =>
+    API.getBooks()
+      .then(res =>{
+        console.log("RES ---------------- " + res.data);
         this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-      )
+        console.log("RES2 ---------------- " );
+      })
       .catch(err => console.log(err));
     } else {
       API.getLocation(this.state.sLocation)
@@ -131,12 +133,15 @@ console.log("++++++++++++++++++" + this.state.email);
           } 
           })}
     
-<option value={this.state.unique[0]}>{this.state.unique[0]}</option>
+              <option value={this.state.unique[0]}>{this.state.unique[0]}</option>
         </select>
       </div>
             {this.state.books.length ? (
               <List>
                 {this.state.books.map(book => {
+
+                  if(book.email === this.state.email){
+
                   return (
                     <ListItem key={book._id}>
                       <a href={"/books/" + book._id}>
@@ -147,6 +152,8 @@ console.log("++++++++++++++++++" + this.state.email);
                       <DeleteBtn onClick={() => this.deleteBook(book._id)} />
                     </ListItem>
                   );
+                }
+
                 })}
               </List>
             ) : (
