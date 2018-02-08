@@ -5,7 +5,8 @@ const db = require("../models");
 const bookFunctions = {
   findAll: function (req, res) {
     db.Book
-      .find(req.query )
+      .find()
+      .where("email").equals(req.params.email)
       .sort({ date: -1 })
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
@@ -46,7 +47,7 @@ const bookFunctions = {
   }
 }
 
-router.get("/api/books", bookFunctions.findAll)
+router.get("/api/books/:email", bookFunctions.findAll)
 
 router.get("/api/location/:author", bookFunctions.findByLocation)
 

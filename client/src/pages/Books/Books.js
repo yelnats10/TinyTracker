@@ -39,7 +39,7 @@ class Books extends React.Component {
   // Loads all books  and sets them to this.state.books
   loadBooks = () => {
     if (this.state.sLocation === "" || this.state.sLocation === "All Locations" || this.state.sLocation === "Select Location"){
-    API.getBooks()
+    API.getBooks(this.state.email)
       .then(res =>
         this.setState({ books: res.data, title: "", author: "", synopsis: "" })
       )

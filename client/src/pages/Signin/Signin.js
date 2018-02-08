@@ -32,38 +32,31 @@ const INITIAL_STATE = {
     email: '',
     password: '',
     error: null,
-    
 };
 
 
 
 class SignInForm extends Component {
   constructor(props) {
-        super(props);
-        //   this.state = { ...INITIAL_STATE };
-        this.state = {
-            email: "",
-            password: "",
-            error: "",
-            validEmail: ""
-        }
+      super(props);
+      
+      this.state = { ...INITIAL_STATE };
   }
 
-
-
   onSubmit = (event) => {
-      const { validEmail, email, password } = this.state;
-      const { history } = this.props;
+      const {
+          email,
+          password,
+      } = this.state;
 
+      const {
+          history,
+      } = this.props;
 
-    // console.log(this.state)
       auth.doSignInWithEmailAndPassword(email, password)
           .then(() => {
-            //   this.setState(() => ({ ...INITIAL_STATE}));
-            //   history.push(routes.BOOKS);
-            this.setState({"validEmail": email})
-            console.log("validEmail: " + this.state.validEmail)
-
+              this.setState(() => ({ ...INITIAL_STATE}));
+              history.push(routes.BOOKS);
           })
           .catch(error => {
               this.setState(byPropKey('error', error));
@@ -132,52 +125,37 @@ class SignInForm extends Component {
   //   }
   // };
 
-  handleChange = (event) => {
-      console.log(event.target)
-      const { placeholder, value } = event.target
-
-      console.log(placeholder)
-      console.log(value)
-      this.setState({
-          [placeholder]: value
-      })
-    console.log(this.state);
-    // this.setState(byPropKey('email', event.target.value));
-  }
-
   render() {
-//     const {
-//       email,
-//       password,
-//       error,
-//   } = this.state;
+    const {
+      email,
+      password,
+      error,
+  } = this.state;
 
-  const isInvalid = this.state.password === '' || this.state.email === '';
+  const isInvalid =
+      password === '' ||
+      email === '';
 
     return (
-      <form>
-            <input
-            value={this.state.email}
-            onChange={event => this.handleChange(event)}
-            type="text"
-            placeholder="email"
-            />
-            <input
-            value={this.state.password}
-            // onChange={event =>this.setState(byPropKey('password', event.target.value))}
-            onChange={event => this.handleChange(event)}
-            type="password"
-            placeholder="password"
-            />
-            <button onClick={this.onSubmit} 
-                    // disabled={isInvalid} 
-                    type="submit">
-                    Sign In
-            </button>
+      <form onSubmit={this.onSubmit}>
+                <input
+                value={email}
+                onChange={event =>this.setState(byPropKey('email', event.target.value))}
+                type="text"
+                placeholder="Email Address"
+                />
+                <input
+                value={password}
+                onChange={event =>this.setState(byPropKey('password', event.target.value))}
+                type="password"
+                placeholder="Password"
+                />
+                <button disabled={isInvalid} type="submit">
+                Sign In
+                </button>
 
-            { this.state.error && <p>{this.state.error.message}</p>}
-        </form>
-            
+                { error && <p>{error.message}</p>}
+            </form>
     );
   }
 }
